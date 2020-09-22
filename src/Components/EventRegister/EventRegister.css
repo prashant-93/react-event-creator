@@ -1,0 +1,112 @@
+.loginParent {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.loginParent > .header {
+    margin: 2rem;
+}
+.loginParent  > div {
+    display: flex;
+    flex-direction: column;
+}
+.loginParent > div > input {
+    height: 50px;
+    border-radius: 0;
+    border: 1px solid #ddd;
+    margin: 0 1rem 1rem 1rem;
+    padding: 0 2.2rem;
+}
+.loginParent > div > input:focus {
+    border-color: #fcb800;
+    outline: none;
+    box-shadow: 0 0 0 transparent;
+}
+.loginParent > div > div > button {
+    display: inline-block;
+    padding: 15px 45px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #000;
+    border: none;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: #fcb800;
+    transition: all .4s ease;
+    cursor: pointer;
+    margin: 0 1rem 1rem 1rem;
+}
+
+.eventType {
+    height: 50px;
+    display: flex;
+    margin: 0 1rem 1rem 1rem;
+}
+
+.eventType > label {
+    margin: auto;
+    font-size: 0.875rem;
+}
+
+.eventType > select {
+    width: 92%;
+    border: 1px solid #ddd;
+}
+
+.allEvents {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(309px,1fr));
+    grid-column-gap: .5rem;
+    grid-row-gap: .5rem;
+    margin: 1rem;
+}
+
+.allEvents > .eventTile {
+    background-color: rgba(168,194,247,.16);
+    padding: 1rem;
+    text-transform: capitalize;
+}
+
+.allEvents > .eventTile > div {
+    margin-top: 0.5rem;
+}
+.tileHead {
+    font-weight: bold;
+    color: rgb(74, 74, 74);
+}
+
+.main-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 1rem;
+}
+.filterHeader {
+    display: flex;
+}
+.filterHeader > .header {
+    margin: auto;
+    padding: 15px 45px;
+    font-size: 16px;
+    color: #000;
+    border: none;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: rgba(168,194,247,.16);
+    transition: all .4s ease;
+    text-transform: capitalize;
+}
+.filterHeader > .eventType {
+    margin: auto;
+}
+.main-header > .addEventBtn {
+    padding: 15px 45px;
+    font-size: 16px;
+    color: #000;
+    border: none;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: #fcb800;
+    transition: all .4s ease;
+    cursor: pointer;
+}
