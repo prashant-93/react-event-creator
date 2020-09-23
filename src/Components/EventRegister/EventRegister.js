@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { connect } from "react-redux";
 import './EventRegister.css';
 
 const EventRegister = (props) => {
@@ -8,13 +8,22 @@ const EventRegister = (props) => {
         event_name: null,
         desc: null,
         venue: null,
-        price: null,
+        price: '0',
         discount_type: 'free',
         discount_percent: null,
         final_amnt: null
     });
     const [showAddForm, setAddForm] = useState(false);
     const [filterListBy, setFilterListBy] = useState('all');
+    const [eventFormErrorMessages, setEventFormErrorMessages] = useState({
+        event_name: null,
+        desc: null,
+        venue: null,
+        price: null,
+        discount_percent: null,
+        final_amnt: null,
+        form_not_valid: false
+    });
     const filterList = [{
         'label': 'All',
         'value': 'all'
@@ -70,6 +79,9 @@ const EventRegister = (props) => {
                     }
                 }
             }
+            if (key === 'price' && eventDetails[key] < 0) {
+                no_error = false;
+            }
         })
         return no_error;
     }
@@ -80,6 +92,8 @@ const EventRegister = (props) => {
             setEventList([...eventList]);
             localStorage.setItem('event_list', JSON.stringify(eventList));
             resetEventForm();
+        } else {
+            setEventFormErrorMessages({ ...eventFormErrorMessages, form_not_valid: true });
         }
     }
 
@@ -89,11 +103,11 @@ const EventRegister = (props) => {
                 <div className={'filterHeader'}>
                     <div className={'header'}>{filterListBy} Event List</div>
                     <div className={'eventType'}>
-                        <label htmlFor="filterBy"/>
+                        <label htmlFor="filterBy" />
                         <select name="filterBy" id="filterBy"
-                                onChange={(event) => {
-                                    setFilterListBy(event.target.value);
-                                }}>
+                            onChange={(event) => {
+                                setFilterListBy(event.target.value);
+                            }}>
                             {
                                 filterList.map((option) => {
                                     return <option value={option.value}>
@@ -105,9 +119,9 @@ const EventRegister = (props) => {
                     </div>
                 </div>
                 <div className={'addEventBtn'}
-                     onClick={() => {
-                         setAddForm(!showAddForm);
-                     }}>Add Event
+                    onClick={() => {
+                        setAddForm(!showAddForm);
+                    }}>Add Event
                 </div>
             </div>
             {
@@ -135,7 +149,7 @@ const EventRegister = (props) => {
                                 </>
                             })
                         }
-                    </div> : null
+                    </div> : <div className={'noEvent'}>No Events Added, Kindly add an event</div>
             }
             {
                 showAddForm ? <>
@@ -143,33 +157,62 @@ const EventRegister = (props) => {
                         <div className={'header'}>Register an Event with us</div>
                         <div>
                             <input type={'text'}
-                                   placeholder={'Event Name'}
-                                   onChange={(event => setEventDetails({
-                                       ...eventDetails,
-                                       event_name: event.target.value
-                                   }))}
+                                placeholder={'Event Name'}
+                                onChange={(event => setEventDetails({
+                                    ...eventDetails,
+                                    event_name: event.target.value
+                                }))}
                             />
                             <input type={'text'}
-                                   placeholder={'Event Description'}
-                                   onBlur={(event => setEventDetails({...eventDetails, desc: event.target.value}))}
+                                placeholder={'Event Description'}
+                                onBlur={(event => setEventDetails({ ...eventDetails, desc: event.target.value }))}
                             />
                             <input type={'text'}
-                                   placeholder={'Event Venue'}
-                                   onBlur={(event => setEventDetails({...eventDetails, venue: event.target.value}))}
+                                placeholder={'Event Venue'}
+                                onBlur={(event => setEventDetails({ ...eventDetails, venue: event.target.value }))}
                             />
                             <input type={'number'}
-                                   placeholder={'Event Price'}
-                                   onBlur={(event => setEventDetails({
-                                       ...eventDetails,
-                                       price: Number(event.target.value)
-                                   }))}
+                                placeholder={'Event Price'}
+                                disabled={(eventDetails.discount_type === 'free')}
+                                value={eventDetails.price ? eventDetails.price : ''}
+                                onBlur={(event => {
+                                    setEventDetails({
+                                        ...eventDetails,
+                                        price: Number(event.target.value)
+                                    })
+                                    if (event.target.value < 0) {
+                                        setEventFormErrorMessages({
+                                            ...eventFormErrorMessages,
+                                            price: 'Price cannot be less than 0'
+                                        });
+                                    } else {
+                                        setEventFormErrorMessages({
+                                            ...eventFormErrorMessages,
+                                            price: null
+                                        })
+                                    }
+                                })}
                             />
+                            {
+                                eventFormErrorMessages.price ?
+                                    <div className={'error-message'}>{eventFormErrorMessages.price}</div> : null
+                            }
                             <div className={'eventType'}>
                                 <label htmlFor="cars">Choose Discount Type:</label>
                                 <select name="cars" id="cars"
-                                        onChange={(event) => {
-                                            setEventDetails({...eventDetails, discount_type: event.target.value})
-                                        }}>
+                                    onChange={(event) => {
+                                        if (event.target.value !== 'free') {
+                                            setEventDetails({
+                                                ...eventDetails, price: null,
+                                                discount_type: event.target.value
+                                            })
+                                        } else {
+                                            setEventDetails({
+                                                ...eventDetails, price: "0",
+                                                discount_type: event.target.value
+                                            })
+                                        }
+                                    }}>
                                     <option value="free">Free</option>
                                     <option value="discount">Discount</option>
                                     <option value="no_discount">No Discount</option>
@@ -179,24 +222,32 @@ const EventRegister = (props) => {
                                 eventDetails.discount_type === 'discount' ?
                                     <>
                                         <input type={'number'}
-                                               placeholder={'Discount (in percentage %)'}
-                                               onBlur={(event => setEventDetails({
-                                                   ...eventDetails,
-                                                   discount_percent: Number(event.target.value)
-                                               }))}
+                                            placeholder={'Discount (in percentage %)'}
+                                            onBlur={(event => setEventDetails({
+                                                ...eventDetails,
+                                                discount_percent: Number(event.target.value)
+                                            }))}
                                         />
                                         <input type={'number'}
-                                               placeholder={'Event Final Payable Amount'}
-                                               disabled={true}
-                                               value={
-                                                   eventDetails.price && eventDetails.discount_percent ?
-                                                       eventDetails.final_amnt : 0
-                                               }
+                                            placeholder={'Event Final Payable Amount'}
+                                            disabled={true}
+                                            value={
+                                                eventDetails.price && eventDetails.discount_percent ?
+                                                    eventDetails.final_amnt : 0
+                                            }
                                         />
                                     </> : null
                             }
+                            {
+                                eventFormErrorMessages.form_not_valid ?
+                                    <div className={'error-message'}>
+                                        Form Not Valid
+                                    </div> : null
+                            }
                             <div>
-                                <button onClick={() => submitEventForm()}>Submit</button>
+                                <button
+                                    disabled={eventFormErrorMessages.form_not_valid}
+                                    onClick={() => submitEventForm()}>Submit</button>
                                 <button
                                     onClick={() => {
                                         resetEventForm()
