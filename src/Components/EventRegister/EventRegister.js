@@ -183,7 +183,6 @@ const EventRegister = (props) => {
                             <input type={'number'}
                                    placeholder={'Event Price'}
                                    disabled={(eventDetails.discount_type === 'free')}
-                                   value={eventDetails.price ? eventDetails.price : ''}
                                    onBlur={(event => {
                                        setEventDetails({
                                            ...eventDetails,
