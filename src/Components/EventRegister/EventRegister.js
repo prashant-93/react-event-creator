@@ -60,11 +60,20 @@ const EventRegister = (props) => {
             event_name: null,
             desc: null,
             venue: null,
-            price: null,
+            price: '0',
             discount_type: 'free',
             discount_percent: null,
             final_amnt: null
         });
+        setEventFormErrorMessages({
+            event_name: null,
+            desc: null,
+            venue: null,
+            price: null,
+            discount_percent: null,
+            final_amnt: null,
+            form_not_valid: false
+        })
         setAddForm(false);
     }
     const checkForFormErrors = () => {
