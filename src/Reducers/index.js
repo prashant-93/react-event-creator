@@ -1,7 +1,8 @@
 import {combineReducers} from "redux";
+import EventAddition from "./EventAddition";
 
 const reducersList = combineReducers({
-    loginData: (() => null)
+    eventInfo: EventAddition
 });
 
 export default reducersList;

@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from "react-redux";
 import './EventRegister.css';
+import {setEventData} from "../../Actions/EventAddAction";
 
 const EventRegister = (props) => {
-    const [eventList, setEventList] = useState(localStorage.getItem('event_list') ? JSON.parse(localStorage.getItem('event_list')) : [])
+    const {eventInfo} = props;
+    //const [eventInfo, setEventList] = useState(props.eventInfo)
     const [eventDetails, setEventDetails] = useState({
         event_name: null,
         desc: null,
@@ -43,7 +45,8 @@ const EventRegister = (props) => {
         if (filterListBy !== 'all') {
             newList = newList.filter((event) => event.discount_type === filterListBy);
         }
-        setEventList([...newList]);
+        //setEventList([...newList]);
+        props.action(setEventData([...newList]));
     }, [filterListBy])
 
     useEffect(() => {
@@ -88,7 +91,7 @@ const EventRegister = (props) => {
                     }
                 }
             }
-            if(key === 'price' && eventDetails[key] < 0) {
+            if (key === 'price' && eventDetails[key] < 0) {
                 no_error = false;
             }
         })
@@ -97,9 +100,10 @@ const EventRegister = (props) => {
 
     const submitEventForm = () => {
         if (checkForFormErrors()) {
-            eventList.push(eventDetails);
-            setEventList([...eventList]);
-            localStorage.setItem('event_list', JSON.stringify(eventList));
+            eventInfo.push(eventDetails);
+            //setEventList([...eventInfo]);
+            props.action(setEventData([...eventInfo]));
+            localStorage.setItem('event_list', JSON.stringify(eventInfo));
             resetEventForm();
         } else {
             setEventFormErrorMessages({...eventFormErrorMessages, form_not_valid: true});
@@ -134,10 +138,10 @@ const EventRegister = (props) => {
                 </div>
             </div>
             {
-                eventList && eventList.length ?
+                eventInfo && eventInfo.length ?
                     <div className={'allEvents'}>
                         {
-                            eventList.map((event) => {
+                            eventInfo.map((event) => {
                                 return <>
                                     <div className={'eventTile'}>
                                         <span className={"tileHead"}> Event Name : </span> {event.event_name}
@@ -150,6 +154,17 @@ const EventRegister = (props) => {
                                         <div>
                                             <span className={"tileHead"}>Event Price : </span> {event.price}
                                         </div>
+                                        {
+                                            event.discount_type === 'discount' ?
+                                                <>
+                                                    <div>
+                                                        <span className={"tileHead"}>Event Discount : </span> {event.discount_percent}%
+                                                    </div>
+                                                    <div>
+                                                        <span className={"tileHead"}>Event Final Price : </span> {event.final_amnt}
+                                                    </div>
+                                                </> : null
+                                        }
                                         <div>
                                             <span
                                                 className={"tileHead"}>Event Discount Type : </span> {event.discount_type}
@@ -162,7 +177,7 @@ const EventRegister = (props) => {
             }
             {
                 showAddForm ? <>
-                    <div className={'loginParent'}>
+                    <div className={'EventWrapper'}>
                         <div className={'header'}>Register an Event with us</div>
                         <div>
                             <input type={'text'}
@@ -209,12 +224,16 @@ const EventRegister = (props) => {
                                 <label htmlFor="cars">Choose Discount Type:</label>
                                 <select name="cars" id="cars"
                                         onChange={(event) => {
-                                            if(event.target.value !== 'free') {
-                                                setEventDetails({...eventDetails, price: null,
-                                                    discount_type: event.target.value})
+                                            if (event.target.value !== 'free') {
+                                                setEventDetails({
+                                                    ...eventDetails, price: null,
+                                                    discount_type: event.target.value
+                                                })
                                             } else {
-                                                setEventDetails({...eventDetails, price: "0",
-                                                    discount_type: event.target.value})
+                                                setEventDetails({
+                                                    ...eventDetails, price: "0",
+                                                    discount_type: event.target.value
+                                                })
                                             }
                                         }}>
                                     <option value="free">Free</option>
@@ -251,7 +270,8 @@ const EventRegister = (props) => {
                             <div>
                                 <button
                                     disabled={eventFormErrorMessages.form_not_valid}
-                                    onClick={() => submitEventForm()}>Submit</button>
+                                    onClick={() => submitEventForm()}>Submit
+                                </button>
                                 <button
                                     onClick={() => {
                                         resetEventForm()
